@@ -1,23 +1,42 @@
 import unittest
 import math
 
-def calculate_discriminant(a, b, c):
-    """Вычисляет дискриминант и корни квадратного уравнения"""
-    if a == 0:
-        raise ValueError("Коэффициент a не может быть равен 0")
+import unittest
+import math
+import sys
+import os
+
+# Добавляем путь к текущей директории для импорта
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+
+# Импортируем функцию из файла 1.py
+try:
+    from one.py import calculate_discriminant 
+except ImportError:
+        import importlib.util
+        spec = importlib.util.spec_from_file_location("discriminant_module", "one.py")
+        discriminant_module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(discriminant_module)
+        calculate_discriminant = discriminant_module.calculate_discriminant
+
+
+# def calculate_discriminant(a, b, c):
+#     """Вычисляет дискриминант и корни квадратного уравнения"""
+#     if a == 0:
+#         raise ValueError("Коэффициент a не может быть равен 0")
     
-    D = b**2 - 4*a*c
-    roots = []
+#     D = b**2 - 4*a*c
+#     roots = []
     
-    if D > 0:
-        root1 = (-b + math.sqrt(D)) / (2*a)
-        root2 = (-b - math.sqrt(D)) / (2*a)
-        roots = [root1, root2]
-    elif D == 0:
-        root = -b / (2*a)
-        roots = [root]
+#     if D > 0:
+#         root1 = (-b + math.sqrt(D)) / (2*a)
+#         root2 = (-b - math.sqrt(D)) / (2*a)
+#         roots = [root1, root2]
+#     elif D == 0:
+#         root = -b / (2*a)
+#         roots = [root]
     
-    return D, roots
+#     return D, roots
 
 class PositiveDiscriminantTests(unittest.TestCase):
     """Тесты для случаев, когда дискриминант больше или равен нулю"""
@@ -81,13 +100,11 @@ class PositiveDiscriminantTests(unittest.TestCase):
     
     def test_positive_discriminant_large_numbers(self):
         """D > 0: большие числа (x² + 1000x + 240000 = 0)"""
-        # Исправлено: было 250000 (D=0), стало 240000 (D>0)
         a, b, c = 1, 1000, 240000
         D, roots = calculate_discriminant(a, b, c)
         
         self.assertGreater(D, 0)
         self.assertEqual(len(roots), 2)
-        # Корни: x = (-1000 ± √(1000000 - 960000)) / 2 = (-1000 ± √40000) / 2 = (-1000 ± 200) / 2
         self.assertAlmostEqual(roots[0], -400.0)
         self.assertAlmostEqual(roots[1], -600.0)
     
@@ -98,9 +115,6 @@ class PositiveDiscriminantTests(unittest.TestCase):
         
         self.assertGreater(D, 0)
         self.assertEqual(len(roots), 2)
-        # Для -x² - 5x - 6 = 0 умножаем на -1: x² + 5x + 6 = 0
-        # Корни: x = -2, x = -3
-        # Но порядок может быть обратным из-за вычислений с плавающей точкой
         roots_sorted = sorted(roots)
         self.assertAlmostEqual(roots_sorted[0], -3.0)
         self.assertAlmostEqual(roots_sorted[1], -2.0)

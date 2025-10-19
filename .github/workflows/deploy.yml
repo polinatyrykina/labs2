@@ -148,13 +148,13 @@ jobs:
     - name: Send Telegram notification on success
       if: needs.test.result == 'success' && needs.lint.result == 'success' && needs.coverage.result == 'success' && needs.security.result == 'success'
       run: |
-        MESSAGE="✅ CI/CD Pipeline SUCCESS
-        📚 Repository: ${{ github.repository }}
-        🎯 Branch: ${{ github.ref }}
-        👤 Commit by: ${{ github.actor }}
-        📝 Message: ${{ github.event.head_commit.message }}
-        🔗 Workflow: ${{ github.workflow }}
-        🌐 View run: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+        MESSAGE=" CI/CD Pipeline SUCCESS
+        Repository: ${{ github.repository }}
+        Branch: ${{ github.ref }}
+        Commit by: ${{ github.actor }}
+        Message: ${{ github.event.head_commit.message }}
+        Workflow: ${{ github.workflow }}
+        View run: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
         
         curl -s -X POST https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage \
           -d chat_id=${{ secrets.TELEGRAM_CHAT_ID }} \
@@ -164,13 +164,13 @@ jobs:
     - name: Send Telegram notification on failure
       if: needs.test.result == 'failure' || needs.lint.result == 'failure' || needs.coverage.result == 'failure' || needs.security.result == 'failure'
       run: |
-        MESSAGE="❌ CI/CD Pipeline FAILED
-        📚 Repository: ${{ github.repository }}
-        🎯 Branch: ${{ github.ref }}
-        👤 Commit by: ${{ github.actor }}
-        📝 Message: ${{ github.event.head_commit.message }}
-        🔗 Workflow: ${{ github.workflow }}
-        🌐 View run: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        MESSAGE=" CI/CD Pipeline FAILED
+        Repository: ${{ github.repository }}
+        Branch: ${{ github.ref }}
+        Commit by: ${{ github.actor }}
+        Message: ${{ github.event.head_commit.message }}
+        Workflow: ${{ github.workflow }}
+        View run: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
         
         Failed jobs:
         ${{ needs.test.result == 'failure' && '• Tests' || '' }}
@@ -187,11 +187,11 @@ jobs:
       if: cancelled()
       run: |
         MESSAGE="⚠️ CI/CD Pipeline CANCELLED
-        📚 Repository: ${{ github.repository }}
-        🎯 Branch: ${{ github.ref }}
-        👤 Commit by: ${{ github.actor }}
-        🔗 Workflow: ${{ github.workflow }}
-        🌐 View run: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+        Repository: ${{ github.repository }}
+        Branch: ${{ github.ref }}
+        Commit by: ${{ github.actor }}
+        Workflow: ${{ github.workflow }}
+        View run: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
         
         curl -s -X POST https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage \
           -d chat_id=${{ secrets.TELEGRAM_CHAT_ID }} \
