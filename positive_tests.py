@@ -13,31 +13,23 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 try:
     from one import calculate_discriminant  # если файл называется 1.py, лучше переименовать в one.py
 except ImportError:
-        # Пытаемся импортировать из файла с именем 1.py (может не работать на некоторых системах)
-        import importlib.util
-        spec = importlib.util.spec_from_file_location("discriminant_module", "one.py")
-        discriminant_module = importlib.util.module_from_spec(spec)
-        spec.loader.exec_module(discriminant_module)
-        calculate_discriminant = discriminant_module.calculate_discriminant
-
-
-# def calculate_discriminant(a, b, c):
-#     """Вычисляет дискриминант и корни квадратного уравнения"""
-#     if a == 0:
-#         raise ValueError("Коэффициент a не может быть равен 0")
-    
-#     D = b**2 - 4*a*c
-#     roots = []
-    
-#     if D > 0:
-#         root1 = (-b + math.sqrt(D)) / (2*a)
-#         root2 = (-b - math.sqrt(D)) / (2*a)
-#         roots = [root1, root2]
-#     elif D == 0:
-#         root = -b / (2*a)
-#         roots = [root]
-    
-#     return D, roots
+        import math
+        def calculate_discriminant(a, b, c):
+            if a == 0:
+                raise ValueError("Коэффициент a не может быть равен 0")
+            
+            D = b**2 - 4*a*c
+            roots = []
+            
+            if D > 0:
+                root1 = (-b + math.sqrt(D)) / (2*a)
+                root2 = (-b - math.sqrt(D)) / (2*a)
+                roots = [root1, root2]
+            elif D == 0:
+                root = -b / (2*a)
+                roots = [root]
+            
+            return D, roots
 
 class PositiveDiscriminantTests(unittest.TestCase):
     """Тесты для случаев, когда дискриминант больше или равен нулю"""
