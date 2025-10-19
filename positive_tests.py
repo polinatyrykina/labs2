@@ -11,8 +11,9 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 # Импортируем функцию из файла 1.py
 try:
-    from one.py import calculate_discriminant 
+    from one import calculate_discriminant  # если файл называется 1.py, лучше переименовать в one.py
 except ImportError:
+        # Пытаемся импортировать из файла с именем 1.py (может не работать на некоторых системах)
         import importlib.util
         spec = importlib.util.spec_from_file_location("discriminant_module", "one.py")
         discriminant_module = importlib.util.module_from_spec(spec)
@@ -100,11 +101,13 @@ class PositiveDiscriminantTests(unittest.TestCase):
     
     def test_positive_discriminant_large_numbers(self):
         """D > 0: большие числа (x² + 1000x + 240000 = 0)"""
+        # Исправлено: было 250000 (D=0), стало 240000 (D>0)
         a, b, c = 1, 1000, 240000
         D, roots = calculate_discriminant(a, b, c)
         
         self.assertGreater(D, 0)
         self.assertEqual(len(roots), 2)
+        # Корни: x = (-1000 ± √(1000000 - 960000)) / 2 = (-1000 ± √40000) / 2 = (-1000 ± 200) / 2
         self.assertAlmostEqual(roots[0], -400.0)
         self.assertAlmostEqual(roots[1], -600.0)
     
@@ -115,6 +118,9 @@ class PositiveDiscriminantTests(unittest.TestCase):
         
         self.assertGreater(D, 0)
         self.assertEqual(len(roots), 2)
+        # Для -x² - 5x - 6 = 0 умножаем на -1: x² + 5x + 6 = 0
+        # Корни: x = -2, x = -3
+        # Но порядок может быть обратным из-за вычислений с плавающей точкой
         roots_sorted = sorted(roots)
         self.assertAlmostEqual(roots_sorted[0], -3.0)
         self.assertAlmostEqual(roots_sorted[1], -2.0)
