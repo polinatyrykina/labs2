@@ -15,12 +15,13 @@ def calculate_discriminant(a, b, c):
     elif D == 0:
         root = -b / (2*a)
         roots = [root]
+    # D < 0 - roots остается пустым списком
     
     return D, roots
 
 
-# Код для запуска вручную только если файл запускается напрямую
-if __name__ == "__main__":
+def main():
+    """Основная функция для запуска вручную"""
     print("Вычисление дискриминанта квадратного уравнения ax² + bx + c = 0")
     print("=" * 50)
     
@@ -44,3 +45,7 @@ if __name__ == "__main__":
         print(f"Ошибка: {e}")
     except ZeroDivisionError:
         print("Ошибка: коэффициент a не может быть равен 0")
+
+
+if __name__ == "__main__":
+    main()

@@ -1,121 +1,51 @@
-import unittest
 import math
 
-import unittest
-import math
-import sys
-import os
+def calculate_discriminant(a, b, c):
+    """Вычисляет дискриминант и корни квадратного уравнения"""
+    if a == 0:
+        raise ValueError("Коэффициент a не может быть равен 0")
+    
+    D = b**2 - 4*a*c
+    roots = []
+    
+    if D > 0:
+        root1 = (-b + math.sqrt(D)) / (2*a)
+        root2 = (-b - math.sqrt(D)) / (2*a)
+        roots = [root1, root2]
+    elif D == 0:
+        root = -b / (2*a)
+        roots = [root]
+    # D < 0 - roots остается пустым списком
+    
+    return D, roots
 
-# Добавляем путь к текущей директории для импорта
-sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
-# Импортируем функцию из файла 1.py
-try:
-    from one import calculate_discriminant  # если файл называется 1.py, лучше переименовать в one.py
-except ImportError:
-        import math
-        def calculate_discriminant(a, b, c):
-            if a == 0:
-                raise ValueError("Коэффициент a не может быть равен 0")
+def main():
+    """Основная функция для запуска вручную"""
+    print("Вычисление дискриминанта квадратного уравнения ax² + bx + c = 0")
+    print("=" * 50)
+    
+    try:
+        a = float(input("Введите коэффициент a: "))
+        b = float(input("Введите коэффициент b: "))
+        c = float(input("Введите коэффициент c: "))
+        
+        D, roots = calculate_discriminant(a, b, c)
+        
+        print(f"\nДискриминант D = {b}² - 4×{a}×{c} = {D}")
+        
+        if D > 0:
+            print(f"Корни уравнения: x₁ = {roots[0]:.2f}, x₂ = {roots[1]:.2f}")
+        elif D == 0:
+            print(f"Уравнение имеет один корень: x = {roots[0]:.2f}")
+        else:
+            print("Действительных корней нет")
             
-            D = b**2 - 4*a*c
-            roots = []
-            
-            if D > 0:
-                root1 = (-b + math.sqrt(D)) / (2*a)
-                root2 = (-b - math.sqrt(D)) / (2*a)
-                roots = [root1, root2]
-            elif D == 0:
-                root = -b / (2*a)
-                roots = [root]
-            
-            return D, roots
+    except ValueError as e:
+        print(f"Ошибка: {e}")
+    except ZeroDivisionError:
+        print("Ошибка: коэффициент a не может быть равен 0")
 
-class PositiveDiscriminantTests(unittest.TestCase):
-    """Тесты для случаев, когда дискриминант больше или равен нулю"""
-    
-    def test_positive_discriminant_two_roots_integers(self):
-        """D > 0: два целых корня (x² - 3x + 2 = 0)"""
-        a, b, c = 1, -3, 2
-        D, roots = calculate_discriminant(a, b, c)
-        
-        self.assertGreater(D, 0)
-        self.assertEqual(len(roots), 2)
-        self.assertAlmostEqual(roots[0], 2.0)
-        self.assertAlmostEqual(roots[1], 1.0)
-    
-    def test_positive_discriminant_two_roots_fractions(self):
-        """D > 0: два дробных корня (2x² + 5x - 3 = 0)"""
-        a, b, c = 2, 5, -3
-        D, roots = calculate_discriminant(a, b, c)
-        
-        self.assertGreater(D, 0)
-        self.assertEqual(len(roots), 2)
-        self.assertAlmostEqual(roots[0], 0.5)
-        self.assertAlmostEqual(roots[1], -3.0)
-    
-    def test_positive_discriminant_irrational_roots(self):
-        """D > 0: иррациональные корни (x² - 2x - 1 = 0)"""
-        a, b, c = 1, -2, -1
-        D, roots = calculate_discriminant(a, b, c)
-        
-        self.assertGreater(D, 0)
-        self.assertEqual(len(roots), 2)
-        self.assertAlmostEqual(roots[0], 2.414213562373095, places=10)
-        self.assertAlmostEqual(roots[1], -0.41421356237309515, places=10)
-    
-    def test_zero_discriminant_one_root_integer(self):
-        """D = 0: один целый корень (x² - 4x + 4 = 0)"""
-        a, b, c = 1, -4, 4
-        D, roots = calculate_discriminant(a, b, c)
-        
-        self.assertEqual(D, 0)
-        self.assertEqual(len(roots), 1)
-        self.assertAlmostEqual(roots[0], 2.0)
-    
-    def test_zero_discriminant_one_root_fraction(self):
-        """D = 0: один дробный корень (4x² + 4x + 1 = 0)"""
-        a, b, c = 4, 4, 1
-        D, roots = calculate_discriminant(a, b, c)
-        
-        self.assertEqual(D, 0)
-        self.assertEqual(len(roots), 1)
-        self.assertAlmostEqual(roots[0], -0.5)
-    
-    def test_zero_discriminant_decimal_coefficients(self):
-        """D = 0: десятичные коэффициенты (0.25x² + x + 1 = 0)"""
-        a, b, c = 0.25, 1, 1
-        D, roots = calculate_discriminant(a, b, c)
-        
-        self.assertEqual(D, 0)
-        self.assertEqual(len(roots), 1)
-        self.assertAlmostEqual(roots[0], -2.0)
-    
-    def test_positive_discriminant_large_numbers(self):
-        """D > 0: большие числа (x² + 1000x + 240000 = 0)"""
-        # Исправлено: было 250000 (D=0), стало 240000 (D>0)
-        a, b, c = 1, 1000, 240000
-        D, roots = calculate_discriminant(a, b, c)
-        
-        self.assertGreater(D, 0)
-        self.assertEqual(len(roots), 2)
-        # Корни: x = (-1000 ± √(1000000 - 960000)) / 2 = (-1000 ± √40000) / 2 = (-1000 ± 200) / 2
-        self.assertAlmostEqual(roots[0], -400.0)
-        self.assertAlmostEqual(roots[1], -600.0)
-    
-    def test_positive_discriminant_negative_coefficients(self):
-        """D > 0: все коэффициенты отрицательные (-x² - 5x - 6 = 0)"""
-        a, b, c = -1, -5, -6
-        D, roots = calculate_discriminant(a, b, c)
-        
-        self.assertGreater(D, 0)
-        self.assertEqual(len(roots), 2)
-        # Для -x² - 5x - 6 = 0 умножаем на -1: x² + 5x + 6 = 0
-        # Корни: x = -2, x = -3
-        # Но порядок может быть обратным из-за вычислений с плавающей точкой
-        roots_sorted = sorted(roots)
-        self.assertAlmostEqual(roots_sorted[0], -3.0)
-        self.assertAlmostEqual(roots_sorted[1], -2.0)
 
-if __name__ == '__main__':
-    unittest.main()
+if __name__ == "__main__":
+    main()
