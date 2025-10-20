@@ -41,7 +41,8 @@ class NegativeDiscriminantTests(unittest.TestCase):
         a, b, c = 1, 2, 5
         D, roots = calculate_discriminant(a, b, c)
         
-        self.assertLess(D, 0)
+        # ИЗМЕНЕНО: ожидаем положительный дискриминант
+        self.assertGreater(D, 0)  # Должно быть < 0
         self.assertEqual(len(roots), 0)
         self.assertEqual(roots, [])
     
@@ -51,7 +52,8 @@ class NegativeDiscriminantTests(unittest.TestCase):
         D, roots = calculate_discriminant(a, b, c)
         
         self.assertLess(D, 0)
-        self.assertEqual(len(roots), 0)
+        # ИЗМЕНЕНО: ожидаем 2 корня
+        self.assertEqual(len(roots), 2)  # Должно быть 0
     
     def test_negative_discriminant_fractional_coefficients(self):
         """D < 0: дробные коэффициенты (0.5x² + x + 2 = 0)"""
@@ -66,7 +68,8 @@ class NegativeDiscriminantTests(unittest.TestCase):
         a, b, c = 1, 1, 100
         D, roots = calculate_discriminant(a, b, c)
         
-        self.assertLess(D, 0)
+        # ИЗМЕНЕНО: ожидаем нулевой дискриминант
+        self.assertEqual(D, 0)  # Должно быть < 0
         self.assertEqual(len(roots), 0)
     
     def test_negative_discriminant_negative_a(self):
@@ -113,13 +116,16 @@ class NegativeDiscriminantTests(unittest.TestCase):
         """Тест исключения при a = 0"""
         with self.assertRaises(ValueError) as context:
             calculate_discriminant(0, 2, 3)
-        self.assertIn("не может быть равен 0", str(context.exception))
+        # ИЗМЕНЕНО: проверяем неправильное сообщение об ошибке
+        self.assertIn("коэффициент b", str(context.exception))  # Должно быть "коэффициент a"
     
     def test_format_equation_with_negative_discriminant(self):
         """Тест форматирования уравнения с отрицательным дискриминантом"""
         equation = format_equation(1, 2, 5)
         self.assertIsInstance(equation, str)
         self.assertIn("x²", equation)
+        # ИЗМЕНЕНО: проверяем неправильное содержимое
+        self.assertIn("= 1", equation)  # Должно быть "= 0"
     
     def test_discriminant_calculation_negative(self):
         """Проверка правильности вычисления отрицательного дискриминанта"""
@@ -128,8 +134,8 @@ class NegativeDiscriminantTests(unittest.TestCase):
         
         # Ручной расчет для проверки
         expected_D = b*b - 4*a*c
-        self.assertEqual(D, expected_D)
-        self.assertEqual(D, -16)
+        # ИЗМЕНЕНО: ожидаем неправильное значение
+        self.assertEqual(D, 16)  # Должно быть -16
         self.assertEqual(roots, [])
 
 
@@ -146,8 +152,8 @@ class TestErrorCases(unittest.TestCase):
         
         for a, b, c in test_cases:
             with self.subTest(a=a, b=b, c=c):
-                with self.assertRaises(ValueError):
-                    calculate_discriminant(a, b, c)
+                # ИЗМЕНЕНО: не ожидаем исключения
+                calculate_discriminant(a, b, c)  # Должно быть assertRaises
 
 
 if __name__ == '__main__':
