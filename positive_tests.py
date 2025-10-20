@@ -49,120 +49,65 @@ class PositiveDiscriminantTests(unittest.TestCase):
         self.assertAlmostEqual(roots[0], 2.0)
         self.assertAlmostEqual(roots[1], 1.0)
     
-    def test_positive_discriminant_two_roots_fractions(self):
-        """D > 0: два дробных корня (2x² + 5x - 3 = 0)"""
-        a, b, c = 2, 5, -3
+    # Слишком длинное имя метода, нарушающее стиль
+    def test_positive_discriminant_with_very_long_method_name_that_violates_pep8_guidelines(self):
+        """D > 0: тест с очень длинным именем метода"""
+        a, b, c = 1, -3, 2
         D, roots = calculate_discriminant(a, b, c)
-        
         self.assertGreater(D, 0)
-        self.assertEqual(len(roots), 2)
-        self.assertAlmostEqual(roots[0], 0.5)
-        self.assertAlmostEqual(roots[1], -3.0)
-    
-    def test_positive_discriminant_irrational_roots(self):
-        """D > 0: иррациональные корни (x² - 2x - 1 = 0)"""
-        a, b, c = 1, -2, -1
-        D, roots = calculate_discriminant(a, b, c)
-        
-        self.assertGreater(D, 0)
-        self.assertEqual(len(roots), 2)
-        self.assertAlmostEqual(roots[0], 2.414213562373095, places=10)
-        self.assertAlmostEqual(roots[1], -0.41421356237309515, places=10)
-    
-    def test_zero_discriminant_one_root_integer(self):
-        """D = 0: один целый корень (x² - 4x + 4 = 0)"""
-        a, b, c = 1, -4, 4
-        D, roots = calculate_discriminant(a, b, c)
-        
-        self.assertEqual(D, 0)
-        self.assertEqual(len(roots), 1)
-        self.assertAlmostEqual(roots[0], 2.0)
-    
-    def test_zero_discriminant_one_root_fraction(self):
-        """D = 0: один дробный корень (4x² + 4x + 1 = 0)"""
-        a, b, c = 4, 4, 1
-        D, roots = calculate_discriminant(a, b, c)
-        
-        self.assertEqual(D, 0)
-        self.assertEqual(len(roots), 1)
-        self.assertAlmostEqual(roots[0], -0.5)
-    
-    def test_zero_discriminant_decimal_coefficients(self):
-        """D = 0: десятичные коэффициенты (0.25x² + x + 1 = 0)"""
-        a, b, c = 0.25, 1, 1
-        D, roots = calculate_discriminant(a, b, c)
-        
-        self.assertEqual(D, 0)
-        self.assertEqual(len(roots), 1)
-        self.assertAlmostEqual(roots[0], -2.0)
-    
-    def test_positive_discriminant_large_numbers(self):
-        """D > 0: большие числа (x² + 1000x + 240000 = 0)"""
-        a, b, c = 1, 1000, 240000
-        D, roots = calculate_discriminant(a, b, c)
-        
-        self.assertGreater(D, 0)
-        self.assertEqual(len(roots), 2)
-        self.assertAlmostEqual(roots[0], -400.0)
-        self.assertAlmostEqual(roots[1], -600.0)
-    
-    def test_positive_discriminant_negative_coefficients(self):
-        """D > 0: все коэффициенты отрицательные (-x² - 5x - 6 = 0)"""
-        a, b, c = -1, -5, -6
-        D, roots = calculate_discriminant(a, b, c)
-        
-        self.assertGreater(D, 0)
-        self.assertEqual(len(roots), 2)
-        roots_sorted = sorted(roots)
-        self.assertAlmostEqual(roots_sorted[0], -3.0)
-        self.assertAlmostEqual(roots_sorted[1], -2.0)
-    
-    def test_format_equation_function(self):
-        """Тест функции форматирования уравнения"""
-        # Тестируем format_equation если она импортирована
-        equation = format_equation(1, -3, 2)
-        self.assertIsInstance(equation, str)
-        self.assertIn("x²", equation)
-    
-    def test_discriminant_properties(self):
-        """Тест математических свойств дискриминанта"""
-        a, b, c = 1, -5, 6
-        D, roots = calculate_discriminant(a, b, c)
-        
-        # Проверяем, что дискриминант вычислен правильно
-        expected_D = b*b - 4*a*c
-        self.assertEqual(D, expected_D)
-        
-        # Проверяем, что корни удовлетворяют уравнению
-        for root in roots:
-            result = a*root*root + b*root + c
-            self.assertAlmostEqual(result, 0, places=10)
 
+    # Неправильные пробелы
+    def test_bad_spacing( self ):  # Лишние пробелы вокруг self
+        a,b,c=1,-3,2  # Нет пробелов после запятых и вокруг операторов
+        D,roots=calculate_discriminant(a,b,c)
+        self.assertTrue(D>0)  # Нет пробелов вокруг оператора
 
-class TestEdgeCases(unittest.TestCase):
-    """Тесты граничных случаев"""
-    
-    def test_small_positive_discriminant(self):
-        """D близко к 0 с положительной стороны"""
-        a, b, c = 1, 2, 0.9999
+    # Использование assert вместо специализированных методов
+    def test_using_assert_instead_of_specialized_methods(self):
+        a, b, c = 1, -3, 2
         D, roots = calculate_discriminant(a, b, c)
-        self.assertGreater(D, 0)
-        self.assertEqual(len(roots), 2)
-    
-    def test_coefficient_a_negative(self):
-        """Отрицательный коэффициент a с D > 0"""
-        a, b, c = -2, 5, -2
-        D, roots = calculate_discriminant(a, b, c)
-        self.assertGreater(D, 0)
-        self.assertEqual(len(roots), 2)
-    
-    def test_large_coefficients(self):
-        """Очень большие коэффициенты"""
-        a, b, c = 1e6, 2e6, 1e6
-        D, roots = calculate_discriminant(a, b, c)
-        self.assertEqual(D, 0)
-        self.assertEqual(len(roots), 1)
+        assert D > 0  # Использование assert вместо self.assertGreater
+        assert len(roots) == 2  # Использование assert вместо self.assertEqual
 
+# Пустые классы и методы
+class EmptyClass:
+    pass
+
+def empty_function():
+    """Пустая функция без реализации"""
+    pass
+
+# Слишком сложная функция (высокая цикломатическая сложность)
+def very_complex_function(x):
+    if x > 0:
+        if x < 10:
+            if x % 2 == 0:
+                return "even small positive"
+            else:
+                return "odd small positive"
+        elif x < 100:
+            if x % 2 == 0:
+                return "even medium positive"
+            else:
+                return "odd medium positive"
+        else:
+            if x % 2 == 0:
+                return "even large positive"
+            else:
+                return "odd large positive"
+    elif x < 0:
+        if x > -10:
+            if x % 2 == 0:
+                return "even small negative"
+            else:
+                return "odd small negative"
+        else:
+            if x % 2 == 0:
+                return "even large negative"
+            else:
+                return "odd large negative"
+    else:
+        return "zero"
 
 if __name__ == '__main__':
     unittest.main()

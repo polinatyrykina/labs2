@@ -34,127 +34,48 @@ except ImportError:
 
 
 class NegativeDiscriminantTests(unittest.TestCase):
-    """Тесты для случаев, когда дискриминант меньше нуля"""
     
-    def test_negative_discriminant_positive_coefficients(self):
-        """D < 0: все коэффициенты положительные (x² + 2x + 5 = 0)"""
+    def test_1(self):  # Слишком короткое имя метода
         a, b, c = 1, 2, 5
         D, roots = calculate_discriminant(a, b, c)
-        
-        # ИЗМЕНЕНО: ожидаем положительный дискриминант
-        self.assertGreater(D, 0)  # Должно быть < 0
-        self.assertEqual(len(roots), 0)
-        self.assertEqual(roots, [])
-    
-    def test_negative_discriminant_mixed_coefficients(self):
-        """D < 0: смешанные коэффициенты (2x² + 3x + 4 = 0)"""
-        a, b, c = 2, 3, 4
-        D, roots = calculate_discriminant(a, b, c)
-        
-        self.assertLess(D, 0)
-        # ИЗМЕНЕНО: ожидаем 2 корня
-        self.assertEqual(len(roots), 2)  # Должно быть 0
-    
-    def test_negative_discriminant_fractional_coefficients(self):
-        """D < 0: дробные коэффициенты (0.5x² + x + 2 = 0)"""
-        a, b, c = 0.5, 1, 2
-        D, roots = calculate_discriminant(a, b, c)
-        
         self.assertLess(D, 0)
         self.assertEqual(len(roots), 0)
     
-    def test_negative_discriminant_large_negative(self):
-        """D < 0: сильно отрицательный дискриминант (x² + x + 100 = 0)"""
-        a, b, c = 1, 1, 100
-        D, roots = calculate_discriminant(a, b, c)
-        
-        # ИЗМЕНЕНО: ожидаем нулевой дискриминант
-        self.assertEqual(D, 0)  # Должно быть < 0
-        self.assertEqual(len(roots), 0)
-    
-    def test_negative_discriminant_negative_a(self):
-        """D < 0: отрицательный коэффициент a (-x² + x - 1 = 0)"""
-        a, b, c = -1, 1, -1
-        D, roots = calculate_discriminant(a, b, c)
-        
+    # Смешанные табы и пробелы
+    def test_mixed_tabs_and_spaces(self):
+        a, b, c = 1, 2, 5
+        D, roots = calculate_discriminant(a, b, c)  # Табы вместо пробелов
         self.assertLess(D, 0)
-        self.assertEqual(len(roots), 0)
     
-    def test_negative_discriminant_small_positive(self):
-        """D < 0: близко к нулю с отрицательной стороны (x² + 2x + 1.0001 = 0)"""
-        a, b, c = 1, 2, 1.0001
+    # Неиспользуемые переменные
+    def test_unused_variables(self):
+        a, b, c = 1, 2, 5
+        unused_variable = "Эта переменная не используется"
         D, roots = calculate_discriminant(a, b, c)
-        
         self.assertLess(D, 0)
-        self.assertEqual(len(roots), 0)
     
-    def test_negative_discriminant_decimal_coefficients(self):
-        """D < 0: десятичные коэффициенты (1.5x² + 2.5x + 3.5 = 0)"""
-        a, b, c = 1.5, 2.5, 3.5
-        D, roots = calculate_discriminant(a, b, c)
-        
-        self.assertLess(D, 0)
-        self.assertEqual(len(roots), 0)
-    
-    def test_negative_discriminant_large_numbers(self):
-        """D < 0: большие числа (x² + 100x + 10000 = 0)"""
-        a, b, c = 1, 100, 10000
-        D, roots = calculate_discriminant(a, b, c)
-        
-        self.assertLess(D, 0)
-        self.assertEqual(len(roots), 0)
-    
-    def test_negative_discriminant_very_small_negative(self):
-        """D < 0: очень близко к нулю (x² + 2x + 1.0000001 = 0)"""
-        a, b, c = 1, 2, 1.0000001
-        D, roots = calculate_discriminant(a, b, c)
-        
-        self.assertLess(D, 0)
-        self.assertEqual(len(roots), 0)
-    
-    def test_error_on_zero_a(self):
-        """Тест исключения при a = 0"""
-        with self.assertRaises(ValueError) as context:
-            calculate_discriminant(0, 2, 3)
-        # ИЗМЕНЕНО: проверяем неправильное сообщение об ошибке
-        self.assertIn("коэффициент b", str(context.exception))  # Должно быть "коэффициент a"
-    
-    def test_format_equation_with_negative_discriminant(self):
-        """Тест форматирования уравнения с отрицательным дискриминантом"""
-        equation = format_equation(1, 2, 5)
-        self.assertIsInstance(equation, str)
-        self.assertIn("x²", equation)
-        # ИЗМЕНЕНО: проверяем неправильное содержимое
-        self.assertIn("= 1", equation)  # Должно быть "= 0"
-    
-    def test_discriminant_calculation_negative(self):
-        """Проверка правильности вычисления отрицательного дискриминанта"""
+    # Слишком длинная строка
+    def test_with_very_long_description_that_exceeds_the_maximum_line_length_and_violates_pep8_guidelines(self):
         a, b, c = 1, 2, 5
         D, roots = calculate_discriminant(a, b, c)
-        
-        # Ручной расчет для проверки
-        expected_D = b*b - 4*a*c
-        # ИЗМЕНЕНО: ожидаем неправильное значение
-        self.assertEqual(D, 16)  # Должно быть -16
-        self.assertEqual(roots, [])
+        self.assertLess(D, 0)
 
+# Глобальные переменные
+global_variable = "Глобальная переменная"
 
-class TestErrorCases(unittest.TestCase):
-    """Тесты обработки ошибок"""
-    
-    def test_zero_a_with_different_values(self):
-        """Различные случаи с a = 0"""
-        test_cases = [
-            (0, 1, 1),
-            (0, -5, 10),
-            (0, 0, 5)
-        ]
-        
-        for a, b, c in test_cases:
-            with self.subTest(a=a, b=b, c=c):
-                # ИЗМЕНЕНО: не ожидаем исключения
-                calculate_discriminant(a, b, c)  # Должно быть assertRaises
+class TestWithGlobalVariable(unittest.TestCase):
+    def test_using_global_variable(self):
+        global global_variable
+        print(global_variable)  # Использование глобальной переменной
 
+# Дублирующий код
+def duplicate_function_1(a, b, c):
+    D = b**2 - 4*a*c
+    return D
+
+def duplicate_function_2(x, y, z):  # Та же логика, разные имена
+    discriminant = y**2 - 4*x*z
+    return discriminant
 
 if __name__ == '__main__':
     unittest.main()
