@@ -1,23 +1,37 @@
 import unittest
 import math
+import os
+import sys
 
-def calculate_discriminant(a, b, c):
-    """Вычисляет дискриминант и корни квадратного уравнения"""
-    if a == 0:
-        raise ValueError("Коэффициент a не может быть равен 0")
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+
+try:
+    from one import calculate_discriminant, format_equation
+except ImportError:
+    def calculate_discriminant(a, b, c):
+        if a == 0:
+            raise ValueError("Коэффициент a не может быть равен 0")
+        D = b**2 - 4*a*c
+        roots = []
+        if D > 0:
+            root1 = (-b + math.sqrt(D)) / (2*a)
+            root2 = (-b - math.sqrt(D)) / (2*a)
+            roots = [root1, root2]
+        elif D == 0:
+            root = -b / (2*a)
+            roots = [root]
+        return D, roots
     
-    D = b**2 - 4*a*c
-    roots = []
-    
-    if D > 0:
-        root1 = (-b + math.sqrt(D)) / (2*a)
-        root2 = (-b - math.sqrt(D)) / (2*a)
-        roots = [root1, root2]
-    elif D == 0:
-        root = -b / (2*a)
-        roots = [root]
-    
-    return D, roots
+    def format_equation(a, b, c):
+        equation_parts = []
+        if a != 0:
+            equation_parts.append(f"{a}x²" if a != 1 else "x²")
+        if b != 0:
+            equation_parts.append(f"{b:+}x" if b != 1 else "+x")
+        if c != 0:
+            equation_parts.append(f"{c:+}")
+        return " ".join(equation_parts) + " = 0"
+
 
 class NegativeDiscriminantTests(unittest.TestCase):
     """Тесты для случаев, когда дискриминант меньше нуля"""
@@ -29,6 +43,7 @@ class NegativeDiscriminantTests(unittest.TestCase):
         
         self.assertLess(D, 0)
         self.assertEqual(len(roots), 0)
+        self.assertEqual(roots, [])
     
     def test_negative_discriminant_mixed_coefficients(self):
         """D < 0: смешанные коэффициенты (2x² + 3x + 4 = 0)"""
@@ -93,6 +108,47 @@ class NegativeDiscriminantTests(unittest.TestCase):
         
         self.assertLess(D, 0)
         self.assertEqual(len(roots), 0)
+    
+    def test_error_on_zero_a(self):
+        """Тест исключения при a = 0"""
+        with self.assertRaises(ValueError) as context:
+            calculate_discriminant(0, 2, 3)
+        self.assertIn("не может быть равен 0", str(context.exception))
+    
+    def test_format_equation_with_negative_discriminant(self):
+        """Тест форматирования уравнения с отрицательным дискриминантом"""
+        equation = format_equation(1, 2, 5)
+        self.assertIsInstance(equation, str)
+        self.assertIn("x²", equation)
+    
+    def test_discriminant_calculation_negative(self):
+        """Проверка правильности вычисления отрицательного дискриминанта"""
+        a, b, c = 1, 2, 5
+        D, roots = calculate_discriminant(a, b, c)
+        
+        # Ручной расчет для проверки
+        expected_D = b*b - 4*a*c
+        self.assertEqual(D, expected_D)
+        self.assertEqual(D, -16)
+        self.assertEqual(roots, [])
+
+
+class TestErrorCases(unittest.TestCase):
+    """Тесты обработки ошибок"""
+    
+    def test_zero_a_with_different_values(self):
+        """Различные случаи с a = 0"""
+        test_cases = [
+            (0, 1, 1),
+            (0, -5, 10),
+            (0, 0, 5)
+        ]
+        
+        for a, b, c in test_cases:
+            with self.subTest(a=a, b=b, c=c):
+                with self.assertRaises(ValueError):
+                    calculate_discriminant(a, b, c)
+
 
 if __name__ == '__main__':
     unittest.main()

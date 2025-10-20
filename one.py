@@ -1,7 +1,18 @@
 import math
 
 def calculate_discriminant(a, b, c):
-    """Вычисляет дискриминант и корни квадратного уравнения"""
+    """
+    Вычисляет дискриминант и корни квадратного уравнения ax² + bx + c = 0
+    
+    Args:
+        a, b, c: коэффициенты уравнения
+        
+    Returns:
+        tuple: (дискриминант, список корней)
+        
+    Raises:
+        ValueError: если a = 0
+    """
     if a == 0:
         raise ValueError("Коэффициент a не может быть равен 0")
     
@@ -15,37 +26,7 @@ def calculate_discriminant(a, b, c):
     elif D == 0:
         root = -b / (2*a)
         roots = [root]
-    # D < 0 - roots остается пустым списком
+    # Для D < 0 roots остается пустым списком
     
     return D, roots
 
-
-def main():
-    """Основная функция для запуска вручную"""
-    print("Вычисление дискриминанта квадратного уравнения ax² + bx + c = 0")
-    print("=" * 50)
-    
-    try:
-        a = float(input("Введите коэффициент a: "))
-        b = float(input("Введите коэффициент b: "))
-        c = float(input("Введите коэффициент c: "))
-        
-        D, roots = calculate_discriminant(a, b, c)
-        
-        print(f"\nДискриминант D = {b}² - 4×{a}×{c} = {D}")
-        
-        if D > 0:
-            print(f"Корни уравнения: x₁ = {roots[0]:.2f}, x₂ = {roots[1]:.2f}")
-        elif D == 0:
-            print(f"Уравнение имеет один корень: x = {roots[0]:.2f}")
-        else:
-            print("Действительных корней нет")
-            
-    except ValueError as e:
-        print(f"Ошибка: {e}")
-    except ZeroDivisionError:
-        print("Ошибка: коэффициент a не может быть равен 0")
-
-
-if __name__ == "__main__":
-    main()

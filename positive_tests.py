@@ -1,24 +1,21 @@
 import unittest
-import sys
+import math
 import os
+import sys
 
-# Добавляем путь к текущей директории для импорта
-sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+# Добавляем текущую директорию в путь для импорта
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-# Импортируем функцию из файла one.py
+# Импортируем функции из one.py
 try:
-    from one import calculate_discriminant
+    from one import calculate_discriminant, format_equation
 except ImportError:
-    # Fallback на случай проблем с импортом
-    import math
+    # Fallback функции
     def calculate_discriminant(a, b, c):
-        """Вычисляет дискриминант и корни квадратного уравнения"""
         if a == 0:
             raise ValueError("Коэффициент a не может быть равен 0")
-        
         D = b**2 - 4*a*c
         roots = []
-        
         if D > 0:
             root1 = (-b + math.sqrt(D)) / (2*a)
             root2 = (-b - math.sqrt(D)) / (2*a)
@@ -26,8 +23,17 @@ except ImportError:
         elif D == 0:
             root = -b / (2*a)
             roots = [root]
-        
         return D, roots
+    
+    def format_equation(a, b, c):
+        equation_parts = []
+        if a != 0:
+            equation_parts.append(f"{a}x²" if a != 1 else "x²")
+        if b != 0:
+            equation_parts.append(f"{b:+}x" if b != 1 else "+x")
+        if c != 0:
+            equation_parts.append(f"{c:+}")
+        return " ".join(equation_parts) + " = 0"
 
 
 class PositiveDiscriminantTests(unittest.TestCase):
@@ -111,33 +117,52 @@ class PositiveDiscriminantTests(unittest.TestCase):
         self.assertAlmostEqual(roots_sorted[0], -3.0)
         self.assertAlmostEqual(roots_sorted[1], -2.0)
     
-    def test_import_fallback(self):
-        """Тест работы fallback функции при проблемах с импортом"""
-        # Временно подменяем calculate_discriminant на fallback версию
-        import math
+    def test_format_equation_function(self):
+        """Тест функции форматирования уравнения"""
+        # Тестируем format_equation если она импортирована
+        equation = format_equation(1, -3, 2)
+        self.assertIsInstance(equation, str)
+        self.assertIn("x²", equation)
+    
+    def test_discriminant_properties(self):
+        """Тест математических свойств дискриминанта"""
+        a, b, c = 1, -5, 6
+        D, roots = calculate_discriminant(a, b, c)
         
-        def fallback_calculate_discriminant(a, b, c):
-            if a == 0:
-                raise ValueError("Коэффициент a не может быть равен 0")
-            
-            D = b**2 - 4*a*c
-            roots = []
-            
-            if D > 0:
-                root1 = (-b + math.sqrt(D)) / (2*a)
-                root2 = (-b - math.sqrt(D)) / (2*a)
-                roots = [root1, root2]
-            elif D == 0:
-                root = -b / (2*a)
-                roots = [root]
-            
-            return D, roots
+        # Проверяем, что дискриминант вычислен правильно
+        expected_D = b*b - 4*a*c
+        self.assertEqual(D, expected_D)
         
-        # Тестируем fallback функцию
-        D, roots = fallback_calculate_discriminant(1, -3, 2)
+        # Проверяем, что корни удовлетворяют уравнению
+        for root in roots:
+            result = a*root*root + b*root + c
+            self.assertAlmostEqual(result, 0, places=10)
+
+
+class TestEdgeCases(unittest.TestCase):
+    """Тесты граничных случаев"""
+    
+    def test_small_positive_discriminant(self):
+        """D близко к 0 с положительной стороны"""
+        a, b, c = 1, 2, 0.9999
+        D, roots = calculate_discriminant(a, b, c)
         self.assertGreater(D, 0)
         self.assertEqual(len(roots), 2)
+    
+    def test_coefficient_a_negative(self):
+        """Отрицательный коэффициент a с D > 0"""
+        a, b, c = -2, 5, -2
+        D, roots = calculate_discriminant(a, b, c)
+        self.assertGreater(D, 0)
+        self.assertEqual(len(roots), 2)
+    
+    def test_large_coefficients(self):
+        """Очень большие коэффициенты"""
+        a, b, c = 1e6, 2e6, 1e6
+        D, roots = calculate_discriminant(a, b, c)
+        self.assertEqual(D, 0)
+        self.assertEqual(len(roots), 1)
 
 
 if __name__ == '__main__':
-    unittest.main()
+    unittest.main() git commit - m 'улучшение тестов'
