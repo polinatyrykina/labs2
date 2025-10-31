@@ -9,7 +9,6 @@ class TestDiscriminant(unittest.TestCase):
     
     def test_zero_discriminant(self):
         self.assertEqual(calculate_discriminant(1, -2, 1), 0)
-    
     def test_negative_discriminant(self):
         self.assertEqual(calculate_discriminant(1, 2, 5), -16)  
 
