@@ -11,3 +11,4 @@ if __name__ == "__main__":
         print(f"Дискриминант: {discriminant}")
     except ValueError:
         print("Ошибка: введите числовые значения коэффициентов.")
+        
