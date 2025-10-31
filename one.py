@@ -1,6 +1,7 @@
 def calculate_discriminant(a, b, c):
     return b ** 2 - 4 * a * c
 
+
 if __name__ == "__main__":
     try:
         a = float(input("Введите коэффициент a: "))
@@ -10,3 +11,4 @@ if __name__ == "__main__":
         print(f"Дискриминант: {discriminant}")
     except ValueError:
         print("Ошибка: введите числовые значения коэффициентов.")
+        
