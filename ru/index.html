@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Русская версия сайта</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; }
+        nav { margin: 20px 0; }
+        a { margin: 0 10px; padding: 8px 16px; text-decoration: none; background: #007bff; color: white; border-radius: 4px; }
+        a:hover { background: #0056b3; }
+    </style>
+</head>
+<body>
+    <h1>Добро пожаловать на русскую версию сайта!</h1>
+    <nav>
+        <a href="../index.html">Главная</a>
+        <a href="../en/index.html">English Version</a>
+    </nav>
+    <p>Это русскоязычная версия нашего сайта.</p>
+    <p>Текущая версия: <strong id="version">latest</strong></p>
+    
+    <script>
+        // Определяем версию из URL
+        const path = window.location.pathname;
+        if (path.includes('/v')) {
+            const version = path.split('/v')[1].split('/')[0];
+            document.getElementById('version').textContent = version;
+        }
+    </script>
+</body>
+</html>
