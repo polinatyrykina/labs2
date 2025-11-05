@@ -3,30 +3,43 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Русская версия сайта</title>
+    <title>Русская версия - v2.0</title>
     <style>
-        body { font-family: Arial, sans-serif; margin: 40px; }
+        body { font-family: Arial, sans-serif; margin: 40px; background: #f0f8ff; }
+        .container { max-width: 800px; margin: 0 auto; background: white; padding: 30px; border-radius: 10px; }
         nav { margin: 20px 0; }
-        a { margin: 0 10px; padding: 8px 16px; text-decoration: none; background: #007bff; color: white; border-radius: 4px; }
-        a:hover { background: #0056b3; }
+        a { margin: 10px; padding: 10px 20px; text-decoration: none; background: #ff6b6b; color: white; border-radius: 5px; }
+        .version-info { background: #4ecdc4; color: white; padding: 10px; border-radius: 5px; }
     </style>
 </head>
 <body>
-    <h1>Добро пожаловать на русскую версию сайта!</h1>
-    <nav>
-        <a href="../index.html">Главная</a>
-        <a href="../en/index.html">English Version</a>
-    </nav>
-    <p>Это русскоязычная версия нашего сайта.</p>
-    <p>Текущая версия: <strong id="version">latest</strong></p>
-    
-    <script>
-        // Определяем версию из URL
-        const path = window.location.pathname;
-        if (path.includes('/v')) {
-            const version = path.split('/v')[1].split('/')[0];
-            document.getElementById('version').textContent = version;
-        }
-    </script>
+    <div class="container">
+        <h1>🇷🇺 Русская версия сайта <span style="background: #4ecdc4; color: white; padding: 5px 10px; border-radius: 4px;">v2.0</span></h1>
+        
+        <nav>
+            <a href="../index.html">Главная</a>
+            <a href="../en/index.html">English</a>
+            <a href="../versions.html">Все версии</a>
+        </nav>
+        
+        <div class="version-info">
+            <strong>Текущая версия:</strong> <span id="version">latest</span>
+        </div>
+        
+        <h2> Новости версии 2.0:</h2>
+        <p>Мы полностью обновили дизайн и улучшили пользовательский опыт!</p>
+        
+        <h3> Контактная информация:</h3>
+        <p>Email: info@example.com</p>
+        <p>Телефон: +7 (999) 123-45-67</p>
+        
+        <script>
+            const path = window.location.pathname;
+            if (path.includes('/v')) {
+                const version = path.split('/v')[1].split('/')[0];
+                document.getElementById('version').textContent = version;
+            }
+        </script>
+    </div>
 </body>
 </html>
