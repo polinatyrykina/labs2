@@ -31,4 +31,31 @@ jobs:
           publish_dir: ./_site
           destination_dir: ${{ env.RELEASE_NAME }}
           keep_files: true
+
           
+      - name: Create root redirect to latest version
+        run: |
+          # Создаем корневой файл который перенаправляет на эту версию
+          cat > ./root_redirect.html << EOF
+          <!DOCTYPE html>
+          <html>
+          <head>
+              <meta http-equiv="refresh" content="0; url=./${RELEASE_NAME}/">
+              <title>Redirecting to ${RELEASE_NAME}</title>
+          </head>
+          <body>
+              <p>Redirecting to latest version ${RELEASE_NAME}... <a href="./${RELEASE_NAME}/">Click here</a></p>
+          </body>
+          </html>
+          EOF
+          
+      - name: Deploy root redirect
+        uses: peaceiris/actions-gh-pages@v4 
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./
+          publish_branch: gh-pages
+          keep_files: true
+          files: |
+            root_redirect.html
+          destination_dir: /
