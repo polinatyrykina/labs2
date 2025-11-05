@@ -7,27 +7,35 @@ on:
 permissions:
   contents: write
 
-jobs:
-  deploy:
+
+  jobs:
+  deploy-job:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Determine release name
-        run: echo "RELEASE_NAME=${GITHUB_REF_NAME}" >> $GITHUB_ENV
-
-      - name: Prepare site files
+      - name: Copy files
         run: |
+          # Создание папки _site
           mkdir -p _site
-          cp -R index.html ru en _site/
-          echo "Содержимое _site:"
-          ls -R _site
+          
+          # Создание папки с именем релиза
+          mkdir -p _site/v${{ github.event.release.tag_name }}
+          
+          # Копирование файлов в папку с версией
+          cp -r *.html ru/ en/ _site/v${{ github.event.release.tag_name }}/
+          
+          # Обновление ссылок в HTML файлах
+          find _site/v${{ github.event.release.tag_name }} -name "*.html" -exec sed -i "s|href=\"\./|href=\"./v${{ github.event.release.tag_name }}/|g" {} \;
 
-      - name: Deploy to GitHub Pages 
-        uses: peaceiris/actions-gh-pages@v4 
+
+      # Шаг 3: Публикуем на GitHub Pages
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./_site
-          destination_dir: ${{ env.RELEASE_NAME }}
+          publish_branch: gh-pages
           keep_files: true
+
