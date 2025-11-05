@@ -47,8 +47,8 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./_site
           destination_dir: ${{ env.RELEASE_NAME }}
-
           keep_files: true
+          
       - name: Deploy root redirect to main site
         uses: peaceiris/actions-gh-pages@v4 
         with:
