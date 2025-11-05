@@ -17,6 +17,23 @@ jobs:
       - name: Determine release name
         run: echo "RELEASE_NAME=${GITHUB_REF_NAME}" >> $GITHUB_ENV
 
+      - name: Create root redirect with CURRENT release
+        run: |
+          # Создаем корневой index.html который перенаправляет на ТЕКУЩИЙ релиз
+          cat > root_index.html << EOF
+          <!DOCTYPE html>
+          <html>
+          <head>
+              <meta http-equiv="refresh" content="0; url=./${RELEASE_NAME}/">
+              <title>Redirecting to ${RELEASE_NAME}</title>
+          </head>
+          <body>
+              <p>Redirecting to latest version ${RELEASE_NAME}... <a href="./${RELEASE_NAME}/">Click here</a></p>
+          </body>
+          </html>
+          EOF
+
+        
       - name: Prepare site files
         run: |
           mkdir -p _site
@@ -30,32 +47,13 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./_site
           destination_dir: ${{ env.RELEASE_NAME }}
-          keep_files: true
 
-          
-      - name: Create root redirect to latest version
-        run: |
-          # Создаем корневой файл который перенаправляет на эту версию
-          cat > ./root_redirect.html << EOF
-          <!DOCTYPE html>
-          <html>
-          <head>
-              <meta http-equiv="refresh" content="0; url=./${RELEASE_NAME}/">
-              <title>Redirecting to ${RELEASE_NAME}</title>
-          </head>
-          <body>
-              <p>Redirecting to latest version ${RELEASE_NAME}... <a href="./${RELEASE_NAME}/">Click here</a></p>
-          </body>
-          </html>
-          EOF
-          
-      - name: Deploy root redirect
+          keep_files: true
+      - name: Deploy root redirect to main site
         uses: peaceiris/actions-gh-pages@v4 
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./
-          publish_branch: gh-pages
           keep_files: true
-          files: |
-            root_redirect.html
-          destination_dir: /
+          
+        
