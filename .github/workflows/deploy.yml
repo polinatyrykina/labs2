@@ -1,59 +1,34 @@
-name: Deploy to GitHub Pages
+name: Deploy site on release
 
 on:
-  push:
-    branches: [ main ]
   release:
-    types: [ published ]
+    types: [published]
 
 permissions:
-  contents: read
-  pages: write
-  id-token: write
-
-concurrency:
-  group: "pages"
-  cancel-in-progress: false
+  contents: write
 
 jobs:
   deploy:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    
     runs-on: ubuntu-latest
-    
     steps:
-    - name: Checkout
-      uses: actions/checkout@v4
-      
-    - name: Setup Pages
-      uses: actions/configure-pages@v4
-      
-    - name: Create version directory for release
-      if: github.event_name == 'release'
-      run: |
-        mkdir -p v${{ github.event.release.tag_name }}
-        cp -r *.html ru/ en/ v${{ github.event.release.tag_name }}/
-        echo "Version ${{ github.event.release.tag_name }} deployed" > v${{ github.event.release.tag_name }}/version.txt
-        
-    - name: Create version history file
-      run: |
-        echo "Доступные версии:" > versions.html
-        echo "<ul>" >> versions.html
-        for dir in v*/; do
-          if [ -d "$dir" ]; then
-            version=$(echo $dir | sed 's/v//; s/\///')
-            echo "<li><a href='$dir'>Версия $version</a></li>" >> versions.html
-          fi
-        done
-        echo "</ul>" >> versions.html
-        
-    - name: Upload artifact
-      uses: actions/upload-pages-artifact@v3
-      with:
-        path: .
-        
-    - name: Deploy to GitHub Pages
-      id: deployment
-      uses: actions/deploy-pages@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Determine release name
+        run: echo "RELEASE_NAME=${GITHUB_REF_NAME}" >> $GITHUB_ENV
+
+      - name: Prepare site files
+        run: |
+          mkdir -p _site
+          cp -R index.html ru en _site/
+          echo "Содержимое _site:"
+          ls -R _site
+
+      - name: Deploy to GitHub Pages 
+        uses: peaceiris/actions-gh-pages@v4 
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./_site
+          destination_dir: ${{ env.RELEASE_NAME }}
+          keep_files: true
+          
