@@ -9,33 +9,34 @@ permissions:
 
 
   jobs:
-  deploy-job:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+    deploy:
+      runs-on: ubuntu-latest
 
-      - name: Copy files
-        run: |
-          # Создание папки _site
-          mkdir -p _site
-          
-          # Создание папки с именем релиза
-          mkdir -p _site/v${{ github.event.release.tag_name }}
-          
-          # Копирование файлов в папку с версией
-          cp -r *.html ru/ en/ _site/v${{ github.event.release.tag_name }}/
-          
-          # Обновление ссылок в HTML файлах
-          find _site/v${{ github.event.release.tag_name }} -name "*.html" -exec sed -i "s|href=\"\./|href=\"./v${{ github.event.release.tag_name }}/|g" {} \;
+      steps:
+        - name: Checkout repository
+          uses: actions/checkout@v4
+
+        - name: Copy files
+          run: |
+            # Создание папки _site
+            mkdir -p _site
+            
+            # Создание папки с именем релиза
+            mkdir -p _site/v${{ github.event.release.tag_name }}
+            
+            # Копирование файлов в папку с версией
+            cp -r *.html ru/ en/ _site/v${{ github.event.release.tag_name }}/
+            
+            # Обновление ссылок в HTML файлах
+            find _site/v${{ github.event.release.tag_name }} -name "*.html" -exec sed -i "s|href=\"\./|href=\"./v${{ github.event.release.tag_name }}/|g" {} \;
 
 
-      # Шаг 3: Публикуем на GitHub Pages
-      - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v4
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./_site
-          publish_branch: gh-pages
-          keep_files: true
+        # Шаг 3: Публикуем на GitHub Pages
+        - name: Deploy to GitHub Pages
+          uses: peaceiris/actions-gh-pages@v4
+          with:
+            github_token: ${{ secrets.GITHUB_TOKEN }}
+            publish_dir: ./_site
+            publish_branch: gh-pages
+            keep_files: true
 
