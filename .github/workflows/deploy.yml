@@ -62,8 +62,8 @@ jobs:
     steps:
     - name: Send Telegram notification!
       run: |
-        curl -x POST \ 
+        curl -X POST \
           -H 'Content-Type: application/json' \
-          -d {"chat_id": "TELEGRAM_CHAT_ID", "text": "Статус: ${{ needs.test.result }}"}\
-          "https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage"
+          -d '{"chat_id": "'"$TELEGRAM_CHAT_ID"'", "text": "Статус: ${{ needs.test.result }}\nРепозиторий: ${{ github.repository }}\nКоммит: ${{ github.sha }}\nLogs: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"}' \
+          "https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN/sendMessage"
           
