@@ -58,7 +58,7 @@ jobs:
     TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
     TELEGRAM_BOT_TOKEN:  ${{ secrets.TELEGRAM_BOT_TOKEN }}
     
-    run: |
+    runs-on: |
       curl -x POST\ 
       -H 'Content-Type: application/json' \
       -d {"chat_id": TELEGRAM_CHAT_ID, "text": "Статус: ${{ needs.test.result }}"}
