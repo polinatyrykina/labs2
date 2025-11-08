@@ -58,10 +58,9 @@ jobs:
     TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
     TELEGRAM_BOT_TOKEN:  ${{ secrets.TELEGRAM_BOT_TOKEN }}
     
-    runs-on: |
+    run: |
       curl -x POST\ 
       -H 'Content-Type: application/json' \
-      -d {"chat_id": TELEGRAM_CHAT_ID, "text": "Статус: ${{ needs.test.result }}"}
       https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage
       
      
