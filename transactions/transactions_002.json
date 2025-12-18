@@ -1,0 +1,52 @@
+[
+  {
+    "timestamp": "2025-12-14T14:56:49.935323",
+    "category": "Food",
+    "amount": 994.96
+  },
+  {
+    "timestamp": "2025-12-16T15:36:49.951253",
+    "category": "Travel",
+    "amount": 404.24
+  },
+  {
+    "timestamp": "2025-12-13T04:18:49.966820",
+    "category": "Shopping",
+    "amount": 184.5
+  },
+  {
+    "timestamp": "2025-12-12T17:02:49.981947",
+    "category": "Entertainment",
+    "amount": 935.36
+  },
+  {
+    "timestamp": "2025-12-14T23:55:49.997142",
+    "category": "Travel",
+    "amount": 149.6
+  },
+  {
+    "timestamp": "2025-12-16T00:21:50.012611",
+    "category": "Utilities",
+    "amount": 761.6
+  },
+  {
+    "timestamp": "2025-12-10T22:35:50.027904",
+    "category": "Transport",
+    "amount": 251.4
+  },
+  {
+    "timestamp": "2025-12-11T16:20:50.043078",
+    "category": "Travel",
+    "amount": 484.47
+  },
+  {
+    "timestamp": "2025-12-14T20:23:50.058447",
+    "category": "Shopping",
+    "amount": 406.38
+  },
+  {
+    "timestamp": "2025-12-11T23:15:50.074031",
+    "category": "Utilities",
+    "amount": 593.64
+  }
+]

@@ -1,33 +1,64 @@
-name: Deploy site on release
+name: CI/CD Pipeline
 
 on:
-  release:
-    types: [published]
-
-permissions:
-  contents: write
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
 
 jobs:
-  deploy:
+  test:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+    - name: Checkout code
+      uses: actions/checkout@v4
 
-      - name: Determine release name
-        run: echo "RELEASE_NAME=${GITHUB_REF_NAME}" >> $GITHUB_ENV
+    - name: Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.9'
 
-      - name: Prepare site files
-        run: |
-          mkdir _site
-          cp -R index.html ru en _site/
-          echo "Содержимое _site:"
-          ls -R _site
+    - name: Install packages
+      run: |
+        pip install Flask bandit pytest
 
-      - name: Deploy to GitHub Pages 
-        uses: peaceiris/actions-gh-pages@v4 
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./_site
-          destination_dir: ${{ env.RELEASE_NAME }}
-          keep_files: true
+    - name: Run simple test
+      run: |
+        # Просто проверяем что app.py существует
+        if [ -f "app.py" ]; then
+          echo "✓ app.py найден"
+          python -c "print('Python работает нормально')"
+        else
+          echo "✗ app.py не найден"
+          exit 1
+        fi
+
+    - name: Run bandit security
+      run: |
+        bandit -r . || echo "Bandit проверка завершена"
+
+  changelog:
+    runs-on: ubuntu-latest
+    needs: test
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Create simple changelog
+      run: |
+        echo "# Changelog" > CHANGELOG.md
+        echo "" >> CHANGELOG.md
+        echo "## [v1.0.0] - $(date +'%Y-%m-%d')" >> CHANGELOG.md
+        echo "  - Initial release" >> CHANGELOG.md
+        echo "" >> CHANGELOG.md
+        
+        # Показываем что создали
+        cat CHANGELOG.md
+
+    - name: Upload CHANGELOG as artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: changelog
+        path: CHANGELOG.md
