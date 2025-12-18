@@ -1,13 +1,47 @@
-name: CI/CD Pipeline
+name: Release Pipeline
 
 on:
-  push:
-    branches: [ main ]
-  workflow_dispatch:  # Ручной запуск
+  release:
+    types: [published, created]
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
 
 jobs:
-  test-and-changelog:
+  test:
     runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.9'
+    
+    - name: Install dependencies
+      run: |
+        pip install Flask bandit
+    
+    - name: Test application
+      run: |
+        echo "Проверяю приложение..."
+        if [ -f "app.py" ]; then
+          python -c "from app import app; print('✓ Приложение работает')"
+        else
+          echo "✗ app.py не найден"
+        fi
+    
+    - name: Security check
+      run: |
+        bandit -r . -q || echo "Проверка безопасности завершена"
+
+  changelog:
+    runs-on: ubuntu-latest
+    needs: test
     
     steps:
     - name: Checkout code
@@ -15,37 +49,41 @@ jobs:
       with:
         fetch-depth: 0
     
-    - name: Setup Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.9'
-    
-    - name: Test
-      run: |
-        pip install Flask bandit
-        if [ -f "app.py" ]; then
-          echo "✓ Приложение найдено"
-        fi
-        bandit -r . -q || true
-    
-    - name: Determine version
-      id: version
-      run: |
-        # Автоматически определяем версию на основе даты
-        VERSION="v$(date +'%Y.%m.%d.%H%M')"
-        echo "version=$VERSION" >> $GITHUB_OUTPUT
-        echo "Версия: $VERSION"
+    - name: Make script executable
+      run: chmod +x generate_changelog.sh
     
     - name: Generate changelog
       env:
-        GITHUB_REF_NAME: ${{ steps.version.outputs.version }}
+        GITHUB_REF_NAME: ${{ github.event.release.tag_name }}
       run: |
-        chmod +x generate_changelog.sh
+        echo "Текущий релиз: $GITHUB_REF_NAME"
         ./generate_changelog.sh
     
-    - name: Create tag and release
+    - name: View changelog
       run: |
-        git config --local user.email "action@github.com"
-        git config --local user.name "GitHub Action"
-        git tag ${{ steps.version.outputs.version }}
-        git push origin ${{ steps.version.outputs.version }}
+        echo "=== Созданный CHANGELOG ==="
+        head -20 CHANGELOG.md
+    
+    - name: Upload changelog to release
+      uses: softprops/action-gh-release@v1
+      with:
+        files: CHANGELOG.md
+        tag_name: ${{ github.event.release.tag_name }}
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: changelog
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Deploy to GitHub Pages
+      uses: peaceiris/actions-gh-pages@v4
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ./
+        destination_dir: ${{ github.event.release.tag_name }}
+        keep_files: true
