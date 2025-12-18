@@ -1,0 +1,37 @@
+{
+  "threshold": 3000.0,
+  "category_summary": [
+    {
+      "category": "Entertainment",
+      "total_amount": 3110.8900000000003,
+      "transaction_count": 5,
+      "average_amount": 622.1780000000001
+    },
+    {
+      "category": "Education",
+      "total_amount": 552.98,
+      "transaction_count": 1,
+      "average_amount": 552.98
+    },
+    {
+      "category": "Transport",
+      "total_amount": 540.19,
+      "transaction_count": 1,
+      "average_amount": 540.19
+    },
+    {
+      "category": "Utilities",
+      "total_amount": 282.25,
+      "transaction_count": 1,
+      "average_amount": 282.25
+    },
+    {
+      "category": "Shopping",
+      "total_amount": 723.86,
+      "transaction_count": 2,
+      "average_amount": 361.93
+    }
+  ],
+  "total_transactions": 10,
+  "total_amount": 5210.17
+}
