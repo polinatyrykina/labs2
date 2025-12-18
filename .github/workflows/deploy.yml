@@ -1,44 +1,51 @@
-name: Simple CI/CD
+name: CI/CD Pipeline
 
 on:
   push:
     branches: [ main ]
+  workflow_dispatch:  # Ручной запуск
 
 jobs:
   test-and-changelog:
     runs-on: ubuntu-latest
-
+    
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
-
+      with:
+        fetch-depth: 0
+    
     - name: Setup Python
       uses: actions/setup-python@v4
       with:
         python-version: '3.9'
-
-    - name: Test and security
+    
+    - name: Test
       run: |
-        # Простые проверки
-        echo "Проверяю app.py..."
-        ls -la *.py
-        python -c "print('Python работает')"
-        
-        echo "Запускаю bandit..."
-        pip install bandit
+        pip install Flask bandit
+        if [ -f "app.py" ]; then
+          echo "✓ Приложение найдено"
+        fi
         bandit -r . -q || true
-
-    - name: Generate changelog
+    
+    - name: Determine version
+      id: version
       run: |
-        echo "Генерирую changelog..."
+        # Автоматически определяем версию на основе даты
+        VERSION="v$(date +'%Y.%m.%d.%H%M')"
+        echo "version=$VERSION" >> $GITHUB_OUTPUT
+        echo "Версия: $VERSION"
+    
+    - name: Generate changelog
+      env:
+        GITHUB_REF_NAME: ${{ steps.version.outputs.version }}
+      run: |
         chmod +x generate_changelog.sh
-        ./generate_changelog.sh "v1.0.0"
-        
-        echo "=== Результат ==="
-        cat CHANGELOG.md
-
-    - name: Save changelog as artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: changelog-file
-        path: CHANGELOG.md
+        ./generate_changelog.sh
+    
+    - name: Create tag and release
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git tag ${{ steps.version.outputs.version }}
+        git push origin ${{ steps.version.outputs.version }}

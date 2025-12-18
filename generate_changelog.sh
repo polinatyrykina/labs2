@@ -1,78 +1,82 @@
 #!/bin/bash
 
-# Простой скрипт для создания changelog по требованиям
+# Скрипт для создания changelog в GitHub Actions
+# Автоматически определяет версию из тега
 
-echo "=== Запуск генерации changelog ==="
+echo "=== Генерация changelog ==="
 
-# 1. Получаем версию из аргументов
-if [ -z "$1" ]; then
-    echo "Ошибка: Укажите версию (например: ./generate_changelog.sh v1.2.0)"
-    exit 1
+# 1. Определяем версию из окружения GitHub Actions
+if [ -n "$GITHUB_REF_NAME" ]; then
+    VERSION="$GITHUB_REF_NAME"
+    echo "Версия из GitHub: $VERSION"
+else
+    # Если запускаем локально, используем дату
+    VERSION="v$(date +'%Y.%m.%d')"
+    echo "Локальная версия: $VERSION"
 fi
 
-VERSION="$1"
 DATE=$(date +"%Y-%m-%d")
-
-echo "Версия: $VERSION"
 echo "Дата: $DATE"
 
-# 2. Проверяем наличие последнего тега
-LAST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
+# 2. Получаем предыдущий тег для сравнения
+echo "Ищу предыдущие теги..."
+ALL_TAGS=$(git tag --sort=-v:refname)
 
-if [ -z "$LAST_TAG" ]; then
-    echo "Последний тег не найден. Будут использованы все коммиты."
-    COMMITS=$(git log --oneline)
+if [ -z "$ALL_TAGS" ]; then
+    echo "Других тегов нет. Беру все коммиты."
+    COMMITS=$(git log --oneline --reverse)
 else
-    echo "Последний тег: $LAST_TAG"
-    COMMITS=$(git log --oneline "${LAST_TAG}..HEAD")
-fi
-
-# 3. Создаем новую секцию changelog
-TEMP_FILE=$(mktemp)
-
-echo "## [$VERSION] - $DATE" >> "$TEMP_FILE"
-echo "" >> "$TEMP_FILE"
-
-# 4. Добавляем коммиты в список
-if [ -z "$COMMITS" ]; then
-    echo "  - Нет новых коммитов" >> "$TEMP_FILE"
-else
-    # Считаем количество коммитов
-    COMMIT_COUNT=$(echo "$COMMITS" | wc -l)
-    echo "Найдено коммитов: $COMMIT_COUNT"
+    # Ищем предыдущий тег (второй в списке после текущего)
+    PREV_TAG=$(echo "$ALL_TAGS" | grep -A1 "^$VERSION$" | tail -1)
     
-    echo "$COMMITS" | while read line; do
-        HASH=$(echo "$line" | awk '{print $1}')
-        MESSAGE=$(echo "$line" | cut -d' ' -f2-)
-        SHORT_HASH=${HASH:0:7}
-        echo "  - $MESSAGE [$SHORT_HASH]" >> "$TEMP_FILE"
-    done
+    if [ -z "$PREV_TAG" ] || [ "$PREV_TAG" = "$VERSION" ]; then
+        # Если это первый тег или не нашли предыдущий
+        PREV_TAG=$(echo "$ALL_TAGS" | head -1)
+    fi
+    
+    if [ "$PREV_TAG" = "$VERSION" ]; then
+        echo "Это первый тег. Беру все коммиты."
+        COMMITS=$(git log --oneline --reverse)
+    else
+        echo "Предыдущий тег: $PREV_TAG"
+        COMMITS=$(git log --oneline --reverse "${PREV_TAG}..HEAD")
+    fi
 fi
 
-echo "" >> "$TEMP_FILE"
+# 3. Создаем секцию changelog
+echo "Создаю changelog..."
+{
+    echo "## [$VERSION] - $DATE"
+    echo ""
+    
+    if [ -z "$COMMITS" ]; then
+        echo "  - Нет изменений"
+    else
+        echo "$COMMITS" | while read line; do
+            HASH=$(echo "$line" | awk '{print $1}')
+            MSG=$(echo "$line" | cut -d' ' -f2-)
+            echo "  - $MSG [${HASH:0:7}]"
+        done
+    fi
+    echo ""
+} > new_changelog.txt
 
-# 5. Добавляем новую версию в начало файла CHANGELOG.md
+# 4. Добавляем в CHANGELOG.md
 if [ -f "CHANGELOG.md" ]; then
-    echo "Обновляю существующий CHANGELOG.md..."
-    cat "$TEMP_FILE" CHANGELOG.md > CHANGELOG_NEW.md
+    echo "Обновляю существующий CHANGELOG.md"
+    cat new_changelog.txt CHANGELOG.md > CHANGELOG_NEW.md
     mv CHANGELOG_NEW.md CHANGELOG.md
 else
-    echo "Создаю новый CHANGELOG.md..."
+    echo "Создаю новый CHANGELOG.md"
     echo "# Changelog" > CHANGELOG.md
     echo "" >> CHANGELOG.md
-    echo "Все изменения в проекте." >> CHANGELOG.md
+    echo "История изменений проекта." >> CHANGELOG.md
     echo "" >> CHANGELOG.md
-    cat "$TEMP_FILE" >> CHANGELOG.md
+    cat new_changelog.txt >> CHANGELOG.md
 fi
 
-# 6. Создаем тег (опционально, но по требованиям)
-echo "Создаю тег $VERSION..."
-git tag -a "$VERSION" -m "Release $VERSION" 2>/dev/null || echo "Тег уже существует или ошибка создания"
-
-# 7. Убираем временный файл
-rm "$TEMP_FILE"
+# 5. Очистка
+rm new_changelog.txt
 
 echo "=== Готово! ==="
-echo "Changelog создан: CHANGELOG.md"
-echo "Просмотр первых строк:"
-head -20 CHANGELOG.md
+echo "Создан CHANGELOG.md для версии $VERSION"
