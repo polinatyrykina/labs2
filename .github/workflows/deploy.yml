@@ -38,7 +38,7 @@ jobs:
         cat CHANGELOG.md
 
     - name: Save changelog as artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: changelog-file
         path: CHANGELOG.md
