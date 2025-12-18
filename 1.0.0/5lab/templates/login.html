@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Вход в систему</h2>
+
+{% if error %}
+<div class="error">
+    {{ error }}
+</div>
+{% endif %}
+
+<form method="POST">
+    <div class="form-group">
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" value="{{ request.form.email if request.form }}" required>
+    </div>
+    
+    <div class="form-group">
+        <label for="password">Пароль:</label>
+        <input type="password" id="password" name="password" required>
+    </div>
+    
+    <button type="submit">Войти</button>
+</form>
+
+<div class="links">
+    Нет аккаунта? <a href="{{ url_for('signup') }}">Зарегистрируйтесь</a>
+</div>
+{% endblock %}

@@ -1,0 +1,52 @@
+[
+  {
+    "timestamp": "2025-12-15T18:01:50.556816",
+    "category": "Entertainment",
+    "amount": 764.15
+  },
+  {
+    "timestamp": "2025-12-15T01:53:50.572942",
+    "category": "Transport",
+    "amount": 592.14
+  },
+  {
+    "timestamp": "2025-12-12T22:56:50.589021",
+    "category": "Utilities",
+    "amount": 693.47
+  },
+  {
+    "timestamp": "2025-12-17T01:44:50.604689",
+    "category": "Utilities",
+    "amount": 559.01
+  },
+  {
+    "timestamp": "2025-12-16T15:36:50.620074",
+    "category": "Utilities",
+    "amount": 907.45
+  },
+  {
+    "timestamp": "2025-12-16T19:08:50.636343",
+    "category": "Transport",
+    "amount": 542.28
+  },
+  {
+    "timestamp": "2025-12-13T22:03:50.651731",
+    "category": "Entertainment",
+    "amount": 320.27
+  },
+  {
+    "timestamp": "2025-12-13T21:36:50.667889",
+    "category": "Transport",
+    "amount": 470.33
+  },
+  {
+    "timestamp": "2025-12-13T07:22:50.683811",
+    "category": "Transport",
+    "amount": 599.54
+  },
+  {
+    "timestamp": "2025-12-11T20:08:50.710429",
+    "category": "Education",
+    "amount": 127.02
+  }
+]
