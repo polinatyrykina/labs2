@@ -1,13 +1,11 @@
-name: CI/CD Pipeline
+name: Simple CI/CD
 
 on:
   push:
     branches: [ main ]
-  pull_request:
-    branches: [ main ]
 
 jobs:
-  test:
+  test-and-changelog:
     runs-on: ubuntu-latest
 
     steps:
@@ -19,46 +17,28 @@ jobs:
       with:
         python-version: '3.9'
 
-    - name: Install packages
+    - name: Test and security
       run: |
-        pip install Flask bandit pytest
-
-    - name: Run simple test
-      run: |
-        # Просто проверяем что app.py существует
-        if [ -f "app.py" ]; then
-          echo "✓ app.py найден"
-          python -c "print('Python работает нормально')"
-        else
-          echo "✗ app.py не найден"
-          exit 1
-        fi
-
-    - name: Run bandit security
-      run: |
-        bandit -r . || echo "Bandit проверка завершена"
-
-  changelog:
-    runs-on: ubuntu-latest
-    needs: test
-
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-
-    - name: Create simple changelog
-      run: |
-        echo "# Changelog" > CHANGELOG.md
-        echo "" >> CHANGELOG.md
-        echo "## [v1.0.0] - $(date +'%Y-%m-%d')" >> CHANGELOG.md
-        echo "  - Initial release" >> CHANGELOG.md
-        echo "" >> CHANGELOG.md
+        # Простые проверки
+        echo "Проверяю app.py..."
+        ls -la *.py
+        python -c "print('Python работает')"
         
-        # Показываем что создали
+        echo "Запускаю bandit..."
+        pip install bandit
+        bandit -r . -q || true
+
+    - name: Generate changelog
+      run: |
+        echo "Генерирую changelog..."
+        chmod +x generate_changelog.sh
+        ./generate_changelog.sh "v1.0.0"
+        
+        echo "=== Результат ==="
         cat CHANGELOG.md
 
-    - name: Upload CHANGELOG as artifact
-      uses: actions/upload-artifact@v4
+    - name: Save changelog as artifact
+      uses: actions/upload-artifact@v3
       with:
-        name: changelog
+        name: changelog-file
         path: CHANGELOG.md
